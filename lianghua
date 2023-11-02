@@ -1,0 +1,46 @@
+import os
+import json
+from web3 import Web3
+from dotenv import load_dotenv
+
+# 加载环境变量
+load_dotenv()
+
+# 以太坊节点和私钥
+infura_url = os.getenv("INFURA_URL")
+private_key = os.getenv("PRIVATE_KEY")
+
+# 合约地址和 ABI
+contract_address = "0xYourContractAddress"
+contract_abi = json.loads('[{"constant":false,"inputs":[],"name":"executeTrade","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]')
+
+# 连接到以太坊节点
+web3 = Web3(Web3.HTTPProvider(infura_url))
+
+# 检查是否连接到节点
+if web3.isConnected():
+    print("已连接到以太坊节点")
+else:
+    print("无法连接到以太坊节点")
+    exit()
+
+# 创建合约实例
+contract = web3.eth.contract(address=contract_address, abi=contract_abi)
+
+# 以太坊账户
+account = web3.eth.account.privateKeyToAccount(private_key)
+
+# 量化交易策略
+def quantitative_strategy():
+    # 在这里实现您的量化交易策略
+    # 这个示例中，我们仅执行一个简单的交易
+    try:
+        # 执行交易
+        tx_hash = contract.functions.executeTrade().transact({"from": account.address})
+        web3.eth.waitForTransactionReceipt(tx_hash)
+        print("交易成功执行")
+    except Exception as e:
+        print(f"交易执行失败: {str(e)}")
+
+if __name__ == "__main__":
+    quantitative_strategy()
